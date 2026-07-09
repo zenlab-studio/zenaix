@@ -1,24 +1,35 @@
-const handlers = {
-  'auth-login': require('./_auth-login'),
-  'auth-register': require('./_auth-register'),
-  'auth-change-password': require('./_auth-change-password'),
-  'giphy-search': require('./_giphy-search'),
-  'hf-proxy': require('./_hf-proxy'),
-  'sync-data': require('./_sync-data'),
-  'zchat-contacts': require('./_zchat-contacts'),
-  'zchat-conversations': require('./_zchat-conversations'),
-  'zchat-handle': require('./_zchat-handle'),
-  'zchat-lookup': require('./_zchat-lookup'),
-  'zchat-messages': require('./_zchat-messages'),
-  'zchat-presence': require('./_zchat-presence'),
-  'zchat-push-subscribe': require('./_zchat-push-subscribe'),
-  'zchat-push-unsubscribe': require('./_zchat-push-unsubscribe'),
-  'zchat-push-vapid': require('./_zchat-push-vapid'),
-  'zchat-requests': require('./_zchat-requests'),
-  'zchat-status': require('./_zchat-status'),
-  'zchat-typing': require('./_zchat-typing'),
-  'zchat-webrtc': require('./_zchat-webrtc')
-};
+const handlers = {};
+
+function load(name, path) {
+  try {
+    handlers[name] = require(path);
+  } catch (err) {
+    console.error(`Failed to load ${name}:`, err.message);
+    handlers[name] = async (req, res) => {
+      res.status(500).json({ error: `Errore caricamento handler: ${err.message}`, stack: err.stack });
+    };
+  }
+}
+
+load('auth-login', './_auth-login');
+load('auth-register', './_auth-register');
+load('auth-change-password', './_auth-change-password');
+load('giphy-search', './_giphy-search');
+load('hf-proxy', './_hf-proxy');
+load('sync-data', './_sync-data');
+load('zchat-contacts', './_zchat-contacts');
+load('zchat-conversations', './_zchat-conversations');
+load('zchat-handle', './_zchat-handle');
+load('zchat-lookup', './_zchat-lookup');
+load('zchat-messages', './_zchat-messages');
+load('zchat-presence', './_zchat-presence');
+load('zchat-push-subscribe', './_zchat-push-subscribe');
+load('zchat-push-unsubscribe', './_zchat-push-unsubscribe');
+load('zchat-push-vapid', './_zchat-push-vapid');
+load('zchat-requests', './_zchat-requests');
+load('zchat-status', './_zchat-status');
+load('zchat-typing', './_zchat-typing');
+load('zchat-webrtc', './_zchat-webrtc');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,11 +38,12 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const route = (req.url || '').replace(/^\/api\//, '').split('?')[0].split('/')[0];
-  if (!route || !handlers[route]) {
+  const handler = handlers[route];
+  if (!handler) {
     return res.status(404).json({ error: 'API endpoint non trovato.', route });
   }
   try {
-    return await handlers[route](req, res);
+    return await handler(req, res);
   } catch (err) {
     console.error(`[${route}]`, err);
     res.status(500).json({ error: err.message, stack: err.stack });
