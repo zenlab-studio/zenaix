@@ -28,6 +28,12 @@ const handlerCache = {
 module.exports = async (req, res) => {
   const slug = req.query.slug || [];
   const route = Array.isArray(slug) ? slug[0] : slug;
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
   if (!(route in handlerNames)) {
     return res.status(404).json({ error: 'API endpoint non trovato.', route });
   }
