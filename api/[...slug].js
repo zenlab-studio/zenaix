@@ -25,7 +25,13 @@ module.exports = async (req, res) => {
   const route = Array.isArray(slug) ? slug[0] : slug;
   const handler = handlers[route];
   if (handler) {
-    return handler(req, res);
+    try {
+      return await handler(req, res);
+    } catch (err) {
+      console.error(`[${route}]`, err);
+      res.status(500).json({ error: err.message, stack: err.stack });
+    }
+    return;
   }
   res.status(404).json({ error: 'API endpoint non trovato.', route });
 };
