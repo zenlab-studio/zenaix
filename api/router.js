@@ -1,26 +1,24 @@
 const handlers = {
-  'auth-login': './_auth-login',
-  'auth-register': './_auth-register',
-  'auth-change-password': './_auth-change-password',
-  'giphy-search': './_giphy-search',
-  'hf-proxy': './_hf-proxy',
-  'sync-data': './_sync-data',
-  'zchat-contacts': './_zchat-contacts',
-  'zchat-conversations': './_zchat-conversations',
-  'zchat-handle': './_zchat-handle',
-  'zchat-lookup': './_zchat-lookup',
-  'zchat-messages': './_zchat-messages',
-  'zchat-presence': './_zchat-presence',
-  'zchat-push-subscribe': './_zchat-push-subscribe',
-  'zchat-push-unsubscribe': './_zchat-push-unsubscribe',
-  'zchat-push-vapid': './_zchat-push-vapid',
-  'zchat-requests': './_zchat-requests',
-  'zchat-status': './_zchat-status',
-  'zchat-typing': './_zchat-typing',
-  'zchat-webrtc': './_zchat-webrtc'
+  'auth-login': require('./_auth-login'),
+  'auth-register': require('./_auth-register'),
+  'auth-change-password': require('./_auth-change-password'),
+  'giphy-search': require('./_giphy-search'),
+  'hf-proxy': require('./_hf-proxy'),
+  'sync-data': require('./_sync-data'),
+  'zchat-contacts': require('./_zchat-contacts'),
+  'zchat-conversations': require('./_zchat-conversations'),
+  'zchat-handle': require('./_zchat-handle'),
+  'zchat-lookup': require('./_zchat-lookup'),
+  'zchat-messages': require('./_zchat-messages'),
+  'zchat-presence': require('./_zchat-presence'),
+  'zchat-push-subscribe': require('./_zchat-push-subscribe'),
+  'zchat-push-unsubscribe': require('./_zchat-push-unsubscribe'),
+  'zchat-push-vapid': require('./_zchat-push-vapid'),
+  'zchat-requests': require('./_zchat-requests'),
+  'zchat-status': require('./_zchat-status'),
+  'zchat-typing': require('./_zchat-typing'),
+  'zchat-webrtc': require('./_zchat-webrtc')
 };
-
-const cache = {};
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
