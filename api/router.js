@@ -31,10 +31,7 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'API endpoint non trovato.', route });
   }
   try {
-    if (!cache[route]) {
-      cache[route] = require(handlers[route]);
-    }
-    return await cache[route](req, res);
+    return await handlers[route](req, res);
   } catch (err) {
     console.error(`[${route}]`, err);
     res.status(500).json({ error: err.message, stack: err.stack });
