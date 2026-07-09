@@ -27,7 +27,7 @@ function makeStore(prefix) {
     async setJSON(key, val) {
       const pathname = storePath(prefix, `${key}.json`);
       await put(pathname, JSON.stringify(val), {
-        access: 'public',
+        access: 'private',
         contentType: 'application/json',
         addRandomSuffix: false
       });
