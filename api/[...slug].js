@@ -17,23 +17,30 @@ const handlerNames = {
   'zchat-requests': './_zchat-requests',
   'zchat-status': './_zchat-status',
   'zchat-typing': './_zchat-typing',
-  'zchat-webrtc': './_zchat-webrtc'
+  'zchat-webrtc': './_zchat-webrtc',
+  'test': null
 };
 
-const handlerCache = {};
+const handlerCache = {
+  test: async (req, res) => { res.status(200).json({ ok: true, from: 'catch-all', route: (Array.isArray(req.query.slug) ? req.query.slug[0] : req.query.slug) }); }
+};
 
 module.exports = async (req, res) => {
   const slug = req.query.slug || [];
   const route = Array.isArray(slug) ? slug[0] : slug;
-  const modPath = handlerNames[route];
-  if (!modPath) {
+  if (!(route in handlerNames)) {
     return res.status(404).json({ error: 'API endpoint non trovato.', route });
   }
   try {
     if (!handlerCache[route]) {
-      handlerCache[route] = require(modPath);
+      const modPath = handlerNames[route];
+      handlerCache[route] = modPath ? require(modPath) : null;
     }
-    return await handlerCache[route](req, res);
+    if (handlerCache[route]) {
+      return await handlerCache[route](req, res);
+    } else {
+      res.status(500).json({ error: 'Handler non disponibile', route });
+    }
   } catch (err) {
     console.error(`[${route}]`, err);
     res.status(500).json({ error: err.message, stack: err.stack });
