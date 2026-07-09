@@ -7,7 +7,6 @@ function storePath(prefix, key = '') {
 async function blobGet(pathname) {
   try {
     const blob = await get(pathname);
-    if (!blob || !blob.ok) return null;
     return await blob.text();
   } catch {
     return null;
