@@ -1,4 +1,4 @@
-const handlerNames = {
+const handlers = {
   'auth-login': './_auth-login',
   'auth-register': './_auth-register',
   'auth-change-password': './_auth-change-password',
@@ -17,36 +17,26 @@ const handlerNames = {
   'zchat-requests': './_zchat-requests',
   'zchat-status': './_zchat-status',
   'zchat-typing': './_zchat-typing',
-  'zchat-webrtc': './_zchat-webrtc',
-  'test': null
+  'zchat-webrtc': './_zchat-webrtc'
 };
 
-const handlerCache = {
-  test: async (req, res) => { res.status(200).json({ ok: true, from: 'catch-all', route: (Array.isArray(req.query.slug) ? req.query.slug[0] : req.query.slug) }); }
-};
+const cache = {};
 
 module.exports = async (req, res) => {
-  const slug = req.query.slug || [];
-  const route = Array.isArray(slug) ? slug[0] : slug;
-
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  if (!(route in handlerNames)) {
+  const route = (req.url || '').replace(/^\/api\//, '').split('?')[0].split('/')[0];
+  if (!route || !handlers[route]) {
     return res.status(404).json({ error: 'API endpoint non trovato.', route });
   }
   try {
-    if (!handlerCache[route]) {
-      const modPath = handlerNames[route];
-      handlerCache[route] = modPath ? require(modPath) : null;
+    if (!cache[route]) {
+      cache[route] = require(handlers[route]);
     }
-    if (handlerCache[route]) {
-      return await handlerCache[route](req, res);
-    } else {
-      res.status(500).json({ error: 'Handler non disponibile', route });
-    }
+    return await cache[route](req, res);
   } catch (err) {
     console.error(`[${route}]`, err);
     res.status(500).json({ error: err.message, stack: err.stack });
